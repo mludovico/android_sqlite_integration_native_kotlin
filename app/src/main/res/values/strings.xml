@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">android_sqlite_integration_native_kotlin</string>
+    <string name="edit_name_hint">Nome</string>
+    <string name="edit_phone_hint">Telefone</string>
+    <string name="save_button">SALVAR CONTATO</string>
+    <string name="delete_button">EXCLUIR CONTATO</string>
+    <string name="contact_title">Editar contato</string>
+    <string name="home_title">Meus contatos</string>
+<!--    <string name="app_name">android_sqlite_integration_native_kotlin</string>-->
+</resources>
