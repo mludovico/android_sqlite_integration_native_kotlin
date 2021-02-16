@@ -24,7 +24,7 @@ class ContactAdapter(
         with(holder.itemView) {
             nameText.text = contact.name
             phoneText.text = contact.phone
-            contactItem.setOnClickListener { onClick(position) }
+            contactItem.setOnClickListener { onClick(contact.id) }
         }
     }
 

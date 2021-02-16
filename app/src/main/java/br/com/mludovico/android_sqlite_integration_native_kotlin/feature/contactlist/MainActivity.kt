@@ -22,24 +22,21 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        generateContactList()
         setupToolBar(toolBar, getString(R.string.home_title), false)
         setupRecyclerView()
-        setuOnClickListeners()
+        setupOnClickListeners()
     }
 
     override fun onResume() {
         super.onResume()
-        adapter?.notifyDataSetChanged()
+        onSearchHandler()
     }
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ContactAdapter(this, ContactSingleton.lista) {onClickRecyclerViewItem(it)}
-        recyclerView.adapter = adapter
     }
 
-    private fun setuOnClickListeners() {
+    private fun setupOnClickListeners() {
         addButton.setOnClickListener { onAddHandler() }
         searchEdit.setOnEditorActionListener { _, _, _ -> onSearchHandler() }
         searchButton.setOnClickListener { onSearchHandler() }
@@ -58,22 +55,17 @@ class MainActivity : BaseActivity() {
 
     private fun onSearchHandler(): Boolean {
         val query = searchEdit.text.toString()
-        var filteredList: List<ContactsVO> = ContactSingleton.lista
+        var filteredList: List<ContactsVO> = listOf()
         try {
             filteredList =
                 ContactApplication.instance.helperDB?.searchContacts(query) ?: mutableListOf()
         } catch (ex: Exception) {
             Log.e("Helper", ex.message ?: "unknown")
         }
-        adapter = ContactAdapter(this, filteredList) { onClickRecyclerViewItem(it)}
+        adapter = ContactAdapter(this, filteredList) { onClickRecyclerViewItem(it) }
         recyclerView.adapter = adapter
         Toast.makeText(this, "Buscando por $query", Toast.LENGTH_SHORT).show()
         return true
     }
 
-    private fun generateContactList() {
-        ContactSingleton.lista.add(ContactsVO(1, "Fulano", "(19) 963257441"))
-        ContactSingleton.lista.add(ContactsVO(2, "Beltrano", "(19) 697786"))
-        ContactSingleton.lista.add(ContactsVO(3, "Ciclano", "(19) 6987523"))
-    }
 }

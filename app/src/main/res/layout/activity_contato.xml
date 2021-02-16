@@ -26,7 +26,7 @@
         android:layout_marginRight="30dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/edit_name_hint"
+        android:hint="@string/edit_name_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBar" />
@@ -38,7 +38,7 @@
         android:layout_marginTop="30dp"
         android:ems="10"
         android:inputType="phone"
-        android:text="@string/edit_phone_hint"
+        android:hint="@string/edit_phone_hint"
         app:layout_constraintEnd_toEndOf="@+id/nameEdit"
         app:layout_constraintStart_toStartOf="@+id/nameEdit"
         app:layout_constraintTop_toBottomOf="@+id/nameEdit" />

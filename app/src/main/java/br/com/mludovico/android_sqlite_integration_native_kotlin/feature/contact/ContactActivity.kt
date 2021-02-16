@@ -3,6 +3,7 @@ package br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contac
 import android.os.Bundle
 import android.view.View
 import br.com.mludovico.android_sqlite_integration_native_kotlin.R
+import br.com.mludovico.android_sqlite_integration_native_kotlin.application.ContactApplication
 import br.com.mludovico.android_sqlite_integration_native_kotlin.bases.BaseActivity
 import br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contactlist.model.ContactsVO
 import br.com.mludovico.android_sqlite_integration_native_kotlin.singleton.ContactSingleton
@@ -10,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_contato.*
 
 class ContactActivity: BaseActivity() {
 
-    var index: Int = -1
+    var contactId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,34 +23,36 @@ class ContactActivity: BaseActivity() {
     }
 
     private fun setupContato() {
-        index = intent.getIntExtra("index", -1)
-        if (index < 0){
+        contactId = intent.getIntExtra("index", -1)
+        if (contactId < 0){
             deleteButton.visibility = View.GONE
             return
         }
-        nameEdit.setText(ContactSingleton.lista[index].name)
-        phoneEdit.setText(ContactSingleton.lista[index].phone)
+        var list = ContactApplication.instance.helperDB?.searchContacts("$contactId", true) ?: return
+        var contact = list.firstOrNull() ?: return
+        nameEdit.setText(contact.name)
+        phoneEdit.setText(contact.phone)
     }
 
     private fun onSaveHandler() {
         val name: String = nameEdit.text.toString()
         val phone: String = phoneEdit.text.toString()
         val contact = ContactsVO(
-            0,
+            contactId,
             name,
             phone
         )
-        if (index == -1) {
-            ContactSingleton.lista.add(contact)
+        if (contactId == -1) {
+            ContactApplication.instance.helperDB?.createContact(contact)
         } else {
-            ContactSingleton.lista.set(index, contact)
+            ContactApplication.instance.helperDB?.updateContact(contact)
         }
         finish()
     }
 
     private fun onDeleteHandler() {
-        if (index >= 0) {
-            ContactSingleton.lista.removeAt(index)
+        if (contactId >= 0) {
+            ContactApplication.instance.helperDB?.removeContact(contactId)
             finish()
         }
     }
