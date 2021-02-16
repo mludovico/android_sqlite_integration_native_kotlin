@@ -6,5 +6,5 @@
     <string name="delete_button">EXCLUIR CONTATO</string>
     <string name="contact_title">Editar contato</string>
     <string name="home_title">Meus contatos</string>
-<!--    <string name="app_name">android_sqlite_integration_native_kotlin</string>-->
+    <string name="search_hint">Buscar...</string>
 </resources>

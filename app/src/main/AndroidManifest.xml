@@ -8,6 +8,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".application.ContactApplication"
         android:theme="@style/Theme.Android_sqlite_integration_native_kotlin">
         <activity android:name=".feature.contact.ContactActivity"></activity>
         <activity android:name=".feature.contactlist.MainActivity">

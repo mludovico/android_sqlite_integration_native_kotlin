@@ -2,16 +2,18 @@ package br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contac
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.AdapterView
+import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.mludovico.android_sqlite_integration_native_kotlin.R
+import br.com.mludovico.android_sqlite_integration_native_kotlin.application.ContactApplication
 import br.com.mludovico.android_sqlite_integration_native_kotlin.bases.BaseActivity
 import br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contact.ContactActivity
 import br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contactlist.adapter.ContactAdapter
-import br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contactlist.adapter.ContactViewHolder
 import br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contactlist.model.ContactsVO
 import br.com.mludovico.android_sqlite_integration_native_kotlin.singleton.ContactSingleton
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.Exception
 
 class MainActivity : BaseActivity() {
 
@@ -39,7 +41,8 @@ class MainActivity : BaseActivity() {
 
     private fun setuOnClickListeners() {
         addButton.setOnClickListener { onAddHandler() }
-        searchBar.setOnClickListener { onSearchHandler() }
+        searchEdit.setOnEditorActionListener { _, _, _ -> onSearchHandler() }
+        searchButton.setOnClickListener { onSearchHandler() }
     }
 
     private fun onAddHandler() {
@@ -53,8 +56,19 @@ class MainActivity : BaseActivity() {
         startActivity(intent)
     }
 
-    private fun onSearchHandler() {
-
+    private fun onSearchHandler(): Boolean {
+        val query = searchEdit.text.toString()
+        var filteredList: List<ContactsVO> = ContactSingleton.lista
+        try {
+            filteredList =
+                ContactApplication.instance.helperDB?.searchContacts(query) ?: mutableListOf()
+        } catch (ex: Exception) {
+            Log.e("Helper", ex.message ?: "unknown")
+        }
+        adapter = ContactAdapter(this, filteredList) { onClickRecyclerViewItem(it)}
+        recyclerView.adapter = adapter
+        Toast.makeText(this, "Buscando por $query", Toast.LENGTH_SHORT).show()
+        return true
     }
 
     private fun generateContactList() {
