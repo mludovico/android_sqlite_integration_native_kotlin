@@ -3,6 +3,7 @@ package br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contac
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.mludovico.android_sqlite_integration_native_kotlin.R
@@ -55,16 +56,23 @@ class MainActivity : BaseActivity() {
 
     private fun onSearchHandler(): Boolean {
         val query = searchEdit.text.toString()
-        var filteredList: List<ContactsVO> = listOf()
-        try {
-            filteredList =
-                ContactApplication.instance.helperDB?.searchContacts(query) ?: mutableListOf()
-        } catch (ex: Exception) {
-            Log.e("Helper", ex.message ?: "unknown")
-        }
-        adapter = ContactAdapter(this, filteredList) { onClickRecyclerViewItem(it) }
-        recyclerView.adapter = adapter
-        Toast.makeText(this, "Buscando por $query", Toast.LENGTH_SHORT).show()
+        progress.visibility = View.VISIBLE
+        Thread(Runnable {
+            Thread.sleep(1500)
+            var filteredList: List<ContactsVO> = listOf()
+            try {
+                filteredList =
+                    ContactApplication.instance.helperDB?.searchContacts(query) ?: mutableListOf()
+            } catch (ex: Exception) {
+                Log.e("Helper", ex.message ?: "unknown")
+            }
+            runOnUiThread {
+                adapter = ContactAdapter(this, filteredList) { onClickRecyclerViewItem(it) }
+                recyclerView.adapter = adapter
+                progress.visibility = View.GONE
+                Toast.makeText(this, "Buscando por $query", Toast.LENGTH_SHORT).show()
+            }
+        }).start()
         return true
     }
 

@@ -2,6 +2,7 @@ package br.com.mludovico.android_sqlite_integration_native_kotlin.feature.contac
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.UiThread
 import br.com.mludovico.android_sqlite_integration_native_kotlin.R
 import br.com.mludovico.android_sqlite_integration_native_kotlin.application.ContactApplication
 import br.com.mludovico.android_sqlite_integration_native_kotlin.bases.BaseActivity
@@ -28,13 +29,20 @@ class ContactActivity: BaseActivity() {
             deleteButton.visibility = View.GONE
             return
         }
-        var list = ContactApplication.instance.helperDB?.searchContacts("$contactId", true) ?: return
-        var contact = list.firstOrNull() ?: return
-        nameEdit.setText(contact.name)
-        phoneEdit.setText(contact.phone)
+        progress.visibility = View.VISIBLE
+        Thread(Runnable {
+            var list = ContactApplication.instance.helperDB?.searchContacts("$contactId", true) ?: return@Runnable
+            var contact = list.firstOrNull() ?: return@Runnable
+            runOnUiThread {
+                nameEdit.setText(contact.name)
+                phoneEdit.setText(contact.phone)
+            }
+        }).start()
+        progress.visibility = View.GONE
     }
 
     private fun onSaveHandler() {
+        progress.visibility = View.VISIBLE
         val name: String = nameEdit.text.toString()
         val phone: String = phoneEdit.text.toString()
         val contact = ContactsVO(
@@ -42,17 +50,24 @@ class ContactActivity: BaseActivity() {
             name,
             phone
         )
-        if (contactId == -1) {
-            ContactApplication.instance.helperDB?.createContact(contact)
-        } else {
-            ContactApplication.instance.helperDB?.updateContact(contact)
-        }
-        finish()
+        Thread(Runnable {
+            if (contactId == -1) {
+                ContactApplication.instance.helperDB?.createContact(contact)
+            } else {
+                ContactApplication.instance.helperDB?.updateContact(contact)
+            runOnUiThread {
+                    progress.visibility = View.GONE
+                    finish()
+                }
+            }
+        }).start()
     }
 
     private fun onDeleteHandler() {
         if (contactId >= 0) {
-            ContactApplication.instance.helperDB?.removeContact(contactId)
+            progress.visibility = View.VISIBLE
+            Thread { ContactApplication.instance.helperDB?.removeContact(contactId) }.start()
+            progress.visibility = View.GONE
             finish()
         }
     }
